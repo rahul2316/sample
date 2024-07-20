@@ -89,8 +89,6 @@
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
-
-
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
@@ -105,17 +103,35 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                loadingBar.style.display = "none";
-                fullscreenButton.onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+          startAR(); // Start AR when Unity instance is ready
+        }).catch((message) => {
+          alert(message);
+        });
+      };
 
       document.body.appendChild(script);
+
+      function startAR() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+            // Access camera here
+            var video = document.createElement('video');
+            video.autoplay = true;
+            video.srcObject = stream;
+            video.play();
+            document.body.appendChild(video);
+          }).catch(function(error) {
+            console.error("Error accessing camera: ", error);
+          });
+        } else {
+          console.error("getUserMedia not supported on this browser.");
+        }
+      }
 
     </script>
   </body>
